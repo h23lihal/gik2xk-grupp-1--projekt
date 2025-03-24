@@ -73,6 +73,20 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
     }
   };
 
+  const handleCheckout = async () => {
+    try {
+      await axios.delete("http://localhost:5001/cart/clearCart", {
+        data: { customerId }, // Skicka rätt kund-ID
+      });
+  
+      setCartItems([]); // Rensa frontendens state
+      setTotalPrice(0);
+      alert("Köpet genomfört! Varukorgen är nu tom.");
+    } catch (error) {
+      console.error("❌ Fel vid köp:", error.response?.data || error.message);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth>
       <DialogTitle>Din Varukorg</DialogTitle>
@@ -113,7 +127,6 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
                   secondary={`Pris: ${item.price} SEK`}
                 />
 
-                {/* Antals-input */}
                 <TextField
                   type="number"
                   value={item.amount}
@@ -124,7 +137,6 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
                   sx={{ width: "60px" }}
                 />
 
-                {/* Ta bort-knapp */}
                 <IconButton onClick={() => handleRemoveItem(item.productId)}>
                   <DeleteIcon color="error" />
                 </IconButton>
@@ -132,11 +144,19 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
             ))}
           </List>
         )}
-        <Typography variant="h6" sx={{ marginTop: "10px", fontWeight: "bold" }}>
+        <Typography variant="h6" sx={{ marginTop: "0.3remx", fontWeight: "bold" }}>
           Totalt: {totalPrice.toFixed(2)} SEK
         </Typography>
       </DialogContent>
       <DialogActions>
+      <Button 
+      onClick={handleCheckout} 
+      color="success" 
+      variant="contained" 
+      sx={{ marginRight: "27rem" }}
+      >
+      Köp
+      </Button>
         <Button onClick={onClose} color="primary">
           Stäng
         </Button>
