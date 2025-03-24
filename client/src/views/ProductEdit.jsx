@@ -1,47 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ProductService from '../services/ProductService';
+import axios from 'axios';
 import ProductForm from '../components/ProductForm';
 import { Button } from '@mui/material';
 
 const ProductEdit = () => {
-  const { id } = useParams();
+  const { id } = useParams(); 
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    if (id) {
-      ProductService.getProductById(id)
-        .then((data) => setProduct(data))
+    console.log("ID från useParams():", id); 
+    if (id && id !== "undefined") {
+      axios.get(`http://localhost:5001/products/${id}`)
+        .then((response) => {
+          if (!response.data) {
+            throw new Error("Produkten hittades inte");
+          }
+          console.log("Produktdata hämtad:", response.data);
+          setProduct(response.data);
+        })
         .catch((error) => {
           console.error("Fel vid hämtning av produkt:", error);
           alert("Produkten hittades inte!");
-          navigate("/"); // Skicka tillbaka till startsidan
+          navigate("/"); // 🔄 Skicka tillbaka till startsidan om produkt saknas
         });
     }
   }, [id, navigate]);
 
   const handleFormSubmit = async (updatedProduct) => {
     try {
-      if (id) {
-        await ProductService.updateProduct(updatedProduct);
+      console.log("Skickar produktdata:", updatedProduct);
+      if (!id || id === "undefined") {
+        console.log("➕ Skapar ny produkt...");
+        await axios.post("http://localhost:5001/products", updatedProduct);
       } else {
-        await ProductService.createProduct(updatedProduct);
+        console.log(`🔄 Uppdaterar produkt med ID: ${id}...`);
+        await axios.put(`http://localhost:5001/products/${id}`, updatedProduct);
       }
-      navigate("/"); // Skicka tillbaka till startsidan efter sparande
+      navigate("/"); // 🔄 Skicka tillbaka till startsidan efter sparning
     } catch (error) {
-      console.error("Fel vid sparande av produkt:", error);
+      console.error("❌ Fel vid sparande av produkt:", error);
     }
   };
 
   const handleDelete = async () => {
     if (window.confirm("Är du säker på att du vill ta bort denna produkt?")) {
       try {
-        await ProductService.deleteProduct(id);
-        alert("Produkten har raderats!");
-        navigate("/"); // Tillbaka till startsidan
+        if (id && id !== "undefined") {
+          console.log(`🗑 Tar bort produkt med ID: ${id}...`);
+          await axios.delete(`http://localhost:5001/products/${id}`);
+          alert("Produkten har raderats!");
+          navigate("/"); // 🔄 Skicka tillbaka till startsidan efter radering
+        } else {
+          alert("⚠ Fel: Kunde inte hitta produktens ID.");
+        }
       } catch (error) {
-        console.error("Fel vid borttagning av produkt:", error);
+        console.error("❌ Fel vid borttagning av produkt:", error);
       }
     }
   };

@@ -55,24 +55,32 @@ router.post("/:id/addRating", async (req, res) => {
 
 
 
-  router.put('/', (req, res) => {
-    const products = req.body;
-    const id = products.id;
+router.put('/:id', (req, res) => {
+    const id = req.params.id;
+    const productData = req.body;
   
-    productServices.update(products, id).then((result) => {
+    productServices.update(productData, id).then((result) => {
       res.status(result.status).json(result.data);
+    }).catch(error => {
+      console.error("Fel vid uppdatering av produkt:", error);
+      res.status(500).json({ message: "Serverfel vid uppdatering av produkt", error });
     });
-  });
+});
 
 
-router.delete('/', (req, res) => {
-    db.products.destroy( {
-        where: {
-            id: req.body.id
+
+router.delete('/:id', (req, res) => {
+    const id = req.params.id;
+  
+    db.products.destroy({ where: { id } }).then((result) => {
+        if (result === 0) {
+            return res.status(404).json({ message: "Produkten hittades inte" });
         }
-    }).then((result => {
-        res.json(`inlägget är borttaget ${result}`);
-    }));
+        res.json({ message: "Produkten har raderats" });
+    }).catch(error => {
+        console.error("Fel vid borttagning av produkt:", error);
+        res.status(500).json({ message: "Serverfel vid borttagning av produkt", error });
+    });
 });
 
 
