@@ -2,33 +2,40 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CartItem from "./CartItem";
 import CartService from "../services/CartService";
+import CartModal from "./CartModal";
 
 const Cart = () => {
-  const { userId } = useParams(); // Hämta userId från URL:en
+  const { customerId } = useParams(); // Hämta customerId från URL:en
   const [cartRows, setCartRows] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!userId) return; // Om userId saknas, gör inget anrop
+    console.log("🔍 Hittat customerId från useParams():", customerId);
 
-    CartService.getCartItems(userId)
-      .then((data) => {
-        console.log("Fetched cart items:", data);
-        setCartRows(data);
-      })
-      .catch((err) => console.error("Error fetching cart items:", err));
-  }, [userId]);
+    if (!customerId) return;
+
+    CartService.getCartItems(customerId).then((data) => {
+      console.log("🛒 Data i varukorgen:", data);
+      setCartRows(data.cartItems || []);
+    });
+  }, [customerId]);
 
   return (
     <div>
+      <button onClick={() => setIsModalOpen(true)}>Öppna varukorg</button>
+
       {cartRows.length === 0 ? (
         <p>Varukorgen är tom.</p>
       ) : (
         <ul>
           {cartRows.map((product) => (
-            <CartItem key={product.id} product={product} />
+            <CartItem key={product.productId} product={product} />
           ))}
         </ul>
       )}
+
+      {/* ✅ Se till att customerId skickas till CartModal */}
+      <CartModal Id={customerId} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

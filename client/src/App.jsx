@@ -6,7 +6,7 @@ import CartModal from './components/CartModal';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customerId, setUserId] = useState(1); // Sätt här användarens ID (här är ett exempel med 1)
+  const [customerId, setCustomerId] = useState(1); // Sätt här användarens ID (här är ett exempel med 1)
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -56,8 +56,7 @@ function App() {
         </Typography>
       </Box>
 
-      {/* Varukorg-modal */}
-      <CartModal cusomerId={customerId} isOpen={isModalOpen} onClose={closeModal} />
+      <CartModal customerId={customerId} isOpen={isModalOpen} onClose={closeModal} />
     </>
   );
 }
