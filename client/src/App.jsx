@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import CartModal from './components/CartModal';
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import HomeIcon from '@mui/icons-material/Home';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customerId, setCustomerId] = useState(1); // Sätt här användarens ID (här är ett exempel med 1)
+  const [customerId] = useState(1); // Sätt här användarens ID (här är ett exempel med 1)
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -16,10 +18,13 @@ function App() {
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" sx={{ backgroundColor: 'gold' }}>
           <Toolbar>
-            {/* Hem-länk */}
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>Hem</Link>
-            </Typography>
+            
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Link to="/" style={{textDecoration: "none",color: "black",  display: "flex", alignItems: "center", gap: "5px" }}>
+         <HomeIcon sx={{ color: "black" }} />
+         Hem
+        </Link>
+        </Typography>
 
             {/* Lägg till produkt-knapp */}
             <Button color="inherit">
@@ -27,16 +32,16 @@ function App() {
                 Lägg till produkt
               </Link>
             </Button>
-
-            {/* Varukorg-knapp */}
-            <Button color="inherit" onClick={openModal}>
-              Varukorg
+        
+            <Button color="inherit" onClick={openModal} startIcon={<ShoppingCartIcon sx={{ color: "black"}}/>} 
+            sx={{ color: 'black' }}>
+              varukorg
             </Button>
           </Toolbar>
         </AppBar>
       </Box>
 
-      {/* Innehåll som kommer att bytas ut beroende på route */}
+    
       <Outlet />
 
       {/* Footer */}
@@ -52,7 +57,6 @@ function App() {
         }}
       >
         <Typography variant="body2">
-          © 2024 Webbshoppen. Alla rättigheter reserverade.
         </Typography>
       </Box>
 

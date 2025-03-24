@@ -21,7 +21,7 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
 
   useEffect(() => {
     if (!customerId) {
-      console.error("❌ Ingen giltig customerId skickad till CartModal!");
+      console.error("Ingen giltig customerId skickad till CartModal!");
       return;
     }
 
@@ -38,7 +38,7 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
       setCartItems(response.data.cartItems || []);
       setTotalPrice(response.data.totalCartPrice || 0);
     } catch (error) {
-      console.error("❌ Det gick inte att hämta varukorgen", error);
+      console.error("Det gick inte att hämta varukorgen", error);
     }
   };
 
@@ -50,7 +50,7 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
       });
       fetchCart(); // Uppdatera varukorgen efter borttagning
     } catch (error) {
-      console.error("❌ Fel vid borttagning av produkt:", error);
+      console.error("Fel vid borttagning av produkt:", error);
     }
   };
 
@@ -83,7 +83,7 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
       setTotalPrice(0);
       alert("Köpet genomfört! Varukorgen är nu tom.");
     } catch (error) {
-      console.error("❌ Fel vid köp:", error.response?.data || error.message);
+      console.error("Fel vid köp:", error.response?.data || error.message);
     }
   };
 
