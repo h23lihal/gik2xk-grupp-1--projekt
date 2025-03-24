@@ -1,40 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import ProductService from '../services/ProductService';
 import ProductForm from '../components/ProductForm';
+import { Button } from '@mui/material';
 
 const ProductEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
 
-  // Hämta produktdata för redigering
   useEffect(() => {
     if (id) {
-      const fetchProduct = async () => {
-        try {
-          const response = await axios.get(`/api/products/`);
-          setProduct(response.data);
-        } catch (error) {
-          console.error('Det gick inte att hämta produkten', error);
-        }
-      };
-      fetchProduct();
+      ProductService.getProductById(id)
+        .then((data) => setProduct(data))
+        .catch((error) => {
+          console.error("Fel vid hämtning av produkt:", error);
+          alert("Produkten hittades inte!");
+          navigate("/"); // Skicka tillbaka till startsidan
+        });
     }
-  }, [id]);
+  }, [id, navigate]);
 
-  // När formuläret är skickat, navigera tillbaka till produktlistan
-  const handleFormSubmit = (newProduct) => {
-    // Du kan här navigera till produktlistan eller visa den nya produkten
-    navigate('/products');
+  const handleFormSubmit = async (updatedProduct) => {
+    try {
+      if (id) {
+        await ProductService.updateProduct(updatedProduct);
+      } else {
+        await ProductService.createProduct(updatedProduct);
+      }
+      navigate("/"); // Skicka tillbaka till startsidan efter sparande
+    } catch (error) {
+      console.error("Fel vid sparande av produkt:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Är du säker på att du vill ta bort denna produkt?")) {
+      try {
+        await ProductService.deleteProduct(id);
+        alert("Produkten har raderats!");
+        navigate("/"); // Tillbaka till startsidan
+      } catch (error) {
+        console.error("Fel vid borttagning av produkt:", error);
+      }
+    }
   };
 
   return (
     <div>
-      {product ? (
-        <ProductForm product={product} onSubmit={handleFormSubmit} />
-      ) : (
-        <ProductForm onSubmit={handleFormSubmit} />
+      <ProductForm onSubmit={handleFormSubmit} product={product} />
+      {id && product && (
+        <Button onClick={handleDelete} variant="contained" color="error" style={{ marginTop: "20px" }}>
+          Ta bort produkt
+        </Button>
       )}
     </div>
   );

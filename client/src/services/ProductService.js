@@ -1,30 +1,37 @@
+import axios from "axios";
+
 const API_BASE = "http://localhost:5001"; // Uppdatera vid behov
 
 const ProductService = {
+  // Hämta alla produkter
   getAllProducts: async () => {
-    const response = await fetch(`${API_BASE}/products`);
-    return response.json();
+    const response = await axios.get(`${API_BASE}/products`);
+    return response.data;
   },
 
+  // Hämta en produkt baserat på ID
   getProductById: async (id) => {
-    const response = await fetch(`${API_BASE}/products/${id}`);
-    return response.json();
+    const response = await axios.get(`${API_BASE}/products/${id}`);
+    return response.data;
   },
 
-addToCart: async (customerId, productId, amount = 1) => {
-  const response = await fetch(`${API_BASE}/cart/addProduct`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ customerId, productId, amount }),
-  });
+  // Skapa en ny produkt
+  createProduct: async (product) => {
+    const response = await axios.post(`${API_BASE}/products`, product);
+    return response.data;
+  },
 
-  return response.json();
-},
+  // Uppdatera en produkt
+  updateProduct: async (product) => {
+    const response = await axios.put(`${API_BASE}/products/${product.id}`, product);
+    return response.data;
+  },
 
-getCart: async (Id) => {
-  const response = await fetch(`${API_BASE}/${Id}/getCart`);
-  return response.json();
-},
+  // Ta bort en produkt
+  deleteProduct: async (id) => {
+    const response = await axios.delete(`${API_BASE}/products/${id}`);
+    return response.data;
+  }
 };
 
 export default ProductService;
