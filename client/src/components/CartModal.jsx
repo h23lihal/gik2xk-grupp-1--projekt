@@ -11,19 +11,17 @@ const CartModal = ({ Id, isOpen, onClose }) => {
     if (isOpen && Id) {
       const fetchCart = async () => {
         try {
-          // Här anropar vi API:t med rätt endpoint
-          const response = await axios.get(`http://localhost:5001/cart/${Id}/getCart`);
+          // Hämta varukorgen från API
+          const response = await axios.get(`http://localhost:5001/customers/${Id}/getCart`);
           const cart = response.data;
 
           // Sätt varukorgens produkter
           setCartItems(cart.cartItems || []);
 
-          // Beräkna totalpriset
-          const total = (cart.cartItems || []).reduce((acc, item) => {
-            return acc + item.price * item.amount;
-          }, 0);
+          // Sätt totalpris
+          setTotalPrice(cart.totalCartPrice || 0);
 
-          setTotalPrice(total);
+          console.log("API-respons för varukorgen:", cart);
         } catch (error) {
           console.error("Det gick inte att hämta varukorgen", error);
         }
@@ -51,7 +49,7 @@ const CartModal = ({ Id, isOpen, onClose }) => {
             ))}
           </List>
         )}
-        <Typography variant="h6">Totalt: {totalPrice} SEK</Typography>
+        <Typography variant="h6">Totalt: {totalPrice.toFixed(2)} SEK</Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
