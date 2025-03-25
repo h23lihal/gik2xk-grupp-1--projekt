@@ -23,7 +23,7 @@ const ProductEdit = () => {
         .catch((error) => {
           console.error("Fel vid hämtning av produkt:", error);
           alert("Produkten hittades inte!");
-          navigate("/"); // 🔄 Skicka tillbaka till startsidan om produkt saknas
+          navigate("/");
         });
     }
   }, [id, navigate]);
@@ -32,15 +32,15 @@ const ProductEdit = () => {
     try {
       console.log("Skickar produktdata:", updatedProduct);
       if (!id || id === "undefined") {
-        console.log("➕ Skapar ny produkt...");
+        console.log("Skapar ny produkt...");
         await axios.post("http://localhost:5001/products", updatedProduct);
       } else {
-        console.log(`🔄 Uppdaterar produkt med ID: ${id}...`);
+        console.log(`Uppdaterar produkt med ID: ${id}...`);
         await axios.put(`http://localhost:5001/products/${id}`, updatedProduct);
       }
-      navigate("/"); // 🔄 Skicka tillbaka till startsidan efter sparning
+      navigate("/"); 
     } catch (error) {
-      console.error("❌ Fel vid sparande av produkt:", error);
+      console.error("Fel vid sparande av produkt:", error);
     }
   };
 
@@ -48,15 +48,15 @@ const ProductEdit = () => {
     if (window.confirm("Är du säker på att du vill ta bort denna produkt?")) {
       try {
         if (id && id !== "undefined") {
-          console.log(`🗑 Tar bort produkt med ID: ${id}...`);
+          console.log(`Tar bort produkt med ID: ${id}...`);
           await axios.delete(`http://localhost:5001/products/${id}`);
           alert("Produkten har raderats!");
-          navigate("/"); // 🔄 Skicka tillbaka till startsidan efter radering
+          navigate("/");
         } else {
           alert("⚠ Fel: Kunde inte hitta produktens ID.");
         }
       } catch (error) {
-        console.error("❌ Fel vid borttagning av produkt:", error);
+        console.error("Fel vid borttagning av produkt:", error);
       }
     }
   };

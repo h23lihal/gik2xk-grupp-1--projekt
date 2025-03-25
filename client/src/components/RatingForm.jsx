@@ -1,6 +1,6 @@
 import { useState } from "react";
 import RatingService from "../services/RatingService";
-import {Rating} from "@mui/material/";
+import {Rating, Button} from "@mui/material/";
 
 function RatingForm({ productId }) {
   const [value, setValue] = useState(null);
@@ -9,22 +9,22 @@ function RatingForm({ productId }) {
     e.preventDefault();
 
     if (!value) {
-        console.error("❌ Inget betyg valt!");
+        console.error("Inget betyg valt!");
         return;
     }
 
     if (!productId) {
-        console.error("❌ productId saknas!");
+        console.error("productId saknas!");
         return;
     }
 
-    console.log("📤 Skickar betyg:", { productId, rating: value });
+    console.log("Skickar betyg:", { productId, rating: value });
 
     try {
         await RatingService.addRating(productId, value);
-        console.log("✅ Betyg skickat!");
+        console.log("Betyg skickat!");
     } catch (error) {
-        console.error("❌ Kunde inte skicka betyg:", error);
+        console.error("Kunde inte skicka betyg:", error);
     }
 };
 
@@ -36,7 +36,7 @@ function RatingForm({ productId }) {
         precision={0.5}
         onChange={(event, newValue) => setValue(newValue)}
       />
-      <button type="submit">Skicka betyg</button>
+      <Button type="submit">Skicka betyg</Button>
     </form>
   );
 }

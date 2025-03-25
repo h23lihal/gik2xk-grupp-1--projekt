@@ -32,8 +32,9 @@ const ProductForm = ({ onSubmit, product }) => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        {product ? "Redigera produkt" : "Lägg till ny produkt"}
+      <Typography variant="h4" gutterBottom sx={{
+        fontFamily: '"Delius Swash Caps", cursive',}} style={{ marginTop: '1rem' }} >
+        {product ? "Redigera produkt" : "Lägg till produkt"}
       </Typography>
 
       <form onSubmit={handleSubmit}>

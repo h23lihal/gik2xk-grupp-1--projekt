@@ -25,7 +25,7 @@ function App() {
                   color: '#003366',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '5px',
+                  gap: '0.5rem',
                 }}
               >
                 <HomeIcon sx={{ color: '#003366' }} />
