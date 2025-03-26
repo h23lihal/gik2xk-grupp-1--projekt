@@ -51,6 +51,7 @@ function App() {
           <Toolbar>
             {/* Hem-länk som leder till startsidan */}
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <Button color="inherit">
               <Link
                 to="/"
                 style={{
@@ -65,6 +66,7 @@ function App() {
                 <HomeIcon sx={{ color: "#003366" }} />
                 Hem
               </Link>
+              </Button>
             </Typography>
 
             {/* Lägg till produkt-knapp som leder till en ny produktform */}
