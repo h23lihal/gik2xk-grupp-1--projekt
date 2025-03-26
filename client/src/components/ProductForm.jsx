@@ -43,7 +43,7 @@ const ProductForm = ({ onSubmit, product }) => {
         <TextField label="Pris" name="price" type="number" value={formData.price} onChange={handleChange} fullWidth margin="normal" required />
         <TextField label="Bild-URL" name="imageUrl" value={formData.imageUrl} onChange={handleChange} fullWidth margin="normal" />
 
-        <Button type="submit" variant="contained" color="primary">
+        <Button sx={{ color: "white", backgroundColor: "#003366", padding: "10px 20px"}} type="submit" variant="contained">
           {product ? "Spara ändringar" : "Lägg till produkt"}
         </Button>
       </form>
