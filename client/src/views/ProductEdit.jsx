@@ -53,7 +53,7 @@ const ProductEdit = () => {
           alert("Produkten har raderats!");
           navigate("/");
         } else {
-          alert("Fel: Kunde inte hitta produktens ID.");
+          alert("⚠ Fel: Kunde inte hitta produktens ID.");
         }
       } catch (error) {
         console.error("Fel vid borttagning av produkt:", error);
@@ -65,7 +65,7 @@ const ProductEdit = () => {
     <div>
       <ProductForm onSubmit={handleFormSubmit} product={product} />
       {id && product && (
-        <Button sx={{ color: "white", backgroundColor: "red", padding: "10px 20px"}} onClick={handleDelete} variant="contained"  style={{ marginTop: "20px" }}>
+        <Button onClick={handleDelete} variant="contained" color="error" style={{ marginTop: "20px" }}>
           Ta bort produkt
         </Button>
       )}
