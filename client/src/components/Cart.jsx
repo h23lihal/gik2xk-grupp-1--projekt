@@ -1,29 +1,28 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import CartItem from "./CartItem";
-import CartService from "../services/CartService";
-import CartModal from "./CartModal";
+import { useParams } from "react-router-dom"; // Hämtar customerId från URL
+import { useEffect, useState } from "react"; // För state och effekt-hantering
+import CartItem from "./CartItem"; // Komponent för att visa en produkt i varukorgen
+import CartService from "../services/CartService"; // Service för att hämta varukorgens produkter
+import CartModal from "./CartModal"; // Modal-komponent för att visa varukorgen
 
 const Cart = () => {
-  const { customerId } = useParams(); // Hämta customerId från URL:en
-  const [cartRows, setCartRows] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { customerId } = useParams(); // Hämta customerId från URL
+  const [cartRows, setCartRows] = useState([]); // State för varukorgens produkter
+  const [isModalOpen, setIsModalOpen] = useState(false); // State för om modal är öppen eller stängd
 
   useEffect(() => {
-    console.log("🔍 Hittat customerId från useParams():", customerId);
+    if (!customerId) return; // Om customerId saknas, gör inget
 
-    if (!customerId) return;
-
+    // Hämta varukorgens produkter och uppdatera state
     CartService.getCartItems(customerId).then((data) => {
-      console.log("🛒 Data i varukorgen:", data);
       setCartRows(data.cartItems || []);
     });
-  }, [customerId]);
+  }, [customerId]); // Kör när customerId ändras
 
   return (
     <div>
       <button onClick={() => setIsModalOpen(true)}>Öppna varukorg</button>
 
+      {/* Visa meddelande om varukorgen är tom, annars lista produkterna */}
       {cartRows.length === 0 ? (
         <p>Varukorgen är tom.</p>
       ) : (
@@ -34,7 +33,7 @@ const Cart = () => {
         </ul>
       )}
 
-      {/* ✅ Se till att customerId skickas till CartModal */}
+      {/* Skicka customerId till CartModal */}
       <CartModal Id={customerId} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );

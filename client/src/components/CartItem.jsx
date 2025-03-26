@@ -1,16 +1,16 @@
-import { Button, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Button, Typography, Grid} from "@mui/material"; // Importera Material UI-komponenter för styling
+import { Link } from "react-router-dom"; // Importera Link-komponent från react-router för navigering
 
 function CartItem({ id, product }) {
     return (
-        <div>
+        <Grid>
+            {/* Skapar en länk som leder till kundens sida baserat på deras id */}
             <Link to={`/customers/${id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                <img width="200" src={product.imageUrl} alt={product.title} />
+                {/* Visa produktens pris */}
                 <Typography variant="h6">Pris: {product.price} kr</Typography>
-                </Link>
-            
-        </div>
+            </Link>
+        </Grid>
     );
 }
 
-export default CartItem;
+export default CartItem; 

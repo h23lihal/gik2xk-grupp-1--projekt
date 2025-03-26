@@ -4,36 +4,39 @@ import { Card, CardMedia, CardContent, Typography } from "@mui/material";
 
 const ProductItemSmall = ({ product }) => {
   return (
+    // Länkar till produktsidan baserat på produktens ID
     <Link to={`/products/${product.id}`} style={{ textDecoration: "none", color: "inherit" }}>
       <Card
         sx={{
-          width: "100%", // 🔹 Gör kortet bredare
+          width: "100%",
           borderRadius: 3,
-          boxShadow: 3,
-          transition: "0.3s",
+          boxShadow: 3, 
+          transition: "0.3s", 
           "&:hover": { boxShadow: 6 },
           display: "flex",
           flexDirection: "column",
           height: "100%", 
         }}
       >
+        {/*Visar produktbilden */}
         <CardMedia
           component="img"
           image={product.imageUrl}
           alt={product.title}
           sx={{
             width: "100%",    
-            height: 200,      
-            objectFit: "contain", 
-            backgroundColor: "#f8f8f8"
+            height: 200,      // Sätter en fast höjd för enhetligt utseende
+            objectFit: "contain", //Gör att bilden anpassar sig utan att beskäras
+            backgroundColor: "#f8f8f8" //Lägger till en ljus bakgrund
           }}
         />
+        {/*Visar produktens information */}
         <CardContent sx={{ flexGrow: 1 }}> 
           <Typography variant="h6" fontWeight="bold">
-            {product.title}
+            {product.title} 
           </Typography>
           <Typography variant="h6" color="#003366" mt={1}>
-            {product.price} SEK
+            {product.price} SEK 
           </Typography>
         </CardContent>
       </Card>
