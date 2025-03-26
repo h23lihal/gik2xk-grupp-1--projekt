@@ -128,19 +128,30 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
       </DialogContent>
       <DialogActions>
         {/* Knapp för att genomföra köp */}
-        <Button 
-          onClick={handleCheckout} 
-          color="success" 
-          variant="contained" 
-          sx={{ marginRight: "27rem" }}
-        >
-          Köp
-        </Button>
-        {/* Knapp för att stänga modal */}
-        <Button onClick={onClose} color="primary">
-          Stäng
-        </Button>
-      </DialogActions>
+    <Button 
+      onClick={handleCheckout} 
+      color="success" 
+      variant="contained" 
+      sx={{ marginRight: "27rem" }}
+    >
+    Köp
+    </Button>
+
+    {/* Knapp för att stänga modal */}
+    <Button 
+      onClick={onClose} 
+      variant="contained" 
+      sx={{
+      backgroundColor: '#003366',
+      color: '#ffffff', // För att göra texten vit, så att den syns bra på den blå bakgrunden
+      '&:hover': {
+      backgroundColor: '#002244', // Mörkare nyans vid hover
+      }
+    }}
+  >
+  Stäng
+    </Button>
+    </DialogActions>
     </Dialog>
   );
 };
