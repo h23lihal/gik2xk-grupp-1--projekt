@@ -1,21 +1,25 @@
+// Importerar komponenten ProductList och Typography från Material UI
 import ProductList from "../components/ProductList";
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 
+// Funktionell komponent som representerar hemsidan
 export default function Home() {
   return (
-    <Typography
-      className="p-5"
-      sx={{
-        fontFamily: '"Delius Swash Caps", cursive', 
-      }}
-    >
-      <h1
-        className="text-3xl font-bold mb-4"
-        style={{ fontFamily: '"Delius Swash Caps", cursive' }} 
+    // Box används för att skapa en container runt innehållet och tillämpa padding
+    <Box sx={{ padding: 5 }}>
+      {/* Typography används här för att ge stil åt rubriken */}
+      <Typography
+        variant="h3" // Använder Material UI:s inbyggda variant för en stor rubrik
+        align="center" // Centrerar texten
+        fontFamily='"Delius Swash Caps", cursive'
+        fontWeight="bold" // Sätter texten till fetstil
+        marginBottom={4} // Sätter marginal mellan rubrik och innehåll
       >
         Välkommen till TeaTime!
-      </h1>
+      </Typography>
+
+      {/* Komponent som visar produktlistan */}
       <ProductList />
-    </Typography>
+    </Box>
   );
 }

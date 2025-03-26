@@ -1,11 +1,13 @@
+// Importerar React hooks samt komponenter som behövs för produktdetalj
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ProductItemLarge from "../components/ProductItemLarge";
+import ProductItemLarge from "../components/ProductItemLarge"; // Komponent som visar produktens detaljer
 
-// Tänk på att importera både RatingService och ProductService
+// Services för att hantera betyg och produkter
 import RatingService from "../services/RatingService";
 import ProductService from "../services/ProductService";
 
+// Material UI-komponenter
 import {
   Button,
   Typography,
@@ -20,45 +22,41 @@ import {
 } from "@mui/material";
 import Rating from "@mui/material/Rating";
 
+// Funktionell komponent för att visa produktdetaljer
 function ProductDetail() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const customerId = 1; // Byt till det faktiska customerId för inloggad användare
+  const { id } = useParams(); // Hämtar produkt-ID från URL
+  const navigate = useNavigate(); // För navigering mellan sidor
+  const customerId = 1; 
 
+  // State för att hantera produktdata, meddelanden, mängd och användarbetyg
   const [product, setProduct] = useState(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(""); 
   const [amount, setAmount] = useState(1);
+  const [userRating, setUserRating] = useState(0); // För att hantera användarens betyg
 
-  // State för att lämna nytt betyg (utan kommentar)
-  const [userRating, setUserRating] = useState(0);
-
-  // Hämta produkt vid mount
+  // Hämta produktinformation
   useEffect(() => {
-    ProductService.getProductById(id)
+    ProductService.getProductById(id) // Anropar API för att hämta produktdetaljer
       .then((data) => {
         console.log("Fetched product:", data);
-        setProduct(data);
+        setProduct(data); // Uppdaterar state med produktdata
       })
-      .catch((err) => console.error("Error fetching product:", err));
+      .catch((err) => console.error("Error fetching product:", err)); // Felhantering vid misslyckad fetch
   }, [id]);
 
-  if (!product) return <p className="p-5">Laddar...</p>;
+  if (!product) return <p className="p-5">Laddar...</p>; // Returnera ett laddar-meddelande om produkten inte är hämtad än
 
-  // Antal betyg totalt
+  // Räkna total antal betyg och snittbetyg från produkten
   const totalRatings = product.ratings?.length || 0;
+  const averageRating = totalRatings > 0
+    ? product.ratings.reduce((sum, r) => sum + r.rating, 0) / totalRatings
+    : 0;
 
-  // Snittbetyg
-  const averageRating =
-    totalRatings > 0
-      ? product.ratings.reduce((sum, r) => sum + r.rating, 0) / totalRatings
-      : 0;
-
-  // Funktion för att räkna hur många som gett X stjärnor
+  // Funktion för att räkna betygsfördelning (hur många som gav X antal stjärnor)
   const getDistribution = (ratings) => {
     const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     (ratings || []).forEach((r) => {
-      // Om dina betyg är heltal (1-5):
-      const star = Math.round(r.rating);
+      const star = Math.round(r.rating); // Runda betyget till närmsta heltal (1-5)
       if (star >= 1 && star <= 5) {
         dist[star]++;
       }
@@ -66,44 +64,39 @@ function ProductDetail() {
     return dist;
   };
 
-  // Fördelning 5→1 stjärna
-  const distribution = getDistribution(product.ratings);
+  const distribution = getDistribution(product.ratings); // Använd för att visa fördelningen av betyg 1-5 stjärnor
 
+  // Lägg till produkt i varukorgen
   const handleAddToCart = async () => {
     try {
-      await ProductService.addToCart(customerId, product.id, amount);
-      setMessage("Produkten har lagts till i varukorgen!");
-  
-      // Sätt en timer för att ta bort meddelandet efter 3 sekunder
+      await ProductService.addToCart(customerId, product.id, amount); // Skickar produkt och mängd till API för att lägga till i varukorgen
+      setMessage("Produkten har lagts till i varukorgen!"); // Sätter ett meddelande om lyckad åtgärd
+
+      // Ta bort meddelandet efter 3 sekunder
       setTimeout(() => {
         setMessage("");
       }, 3000);
     } catch (error) {
-      console.error(
-        "Misslyckades att lägga till i varukorgen:",
-        error.response ? error.response.data : error.message
-      );
-      setMessage("Kunde inte lägga till i varukorgen.");
-  
-      // Sätt en timer även för felmeddelandet
+      console.error("Misslyckades att lägga till i varukorgen:", error.response ? error.response.data : error.message);
+      setMessage("Kunde inte lägga till i varukorgen."); // Felhantering om produkten inte kan läggas till
+
+      // Ta bort felmeddelandet efter 3 sekunder
       setTimeout(() => {
         setMessage("");
       }, 3000);
     }
   };
 
-
-  // Skicka in nytt betyg (utan kommentar)
+  // Skicka användarens betyg
   const handleSubmitRating = async () => {
     try {
-      // Anropa din RatingService för att spara betyget
-      await RatingService.addRating(product.id, userRating);
+      await RatingService.addRating(product.id, userRating); // Anropar RatingService för att spara betyget
 
-      // Hämta produkten igen för att uppdatera rating-listan och fördelning
+      // Uppdaterar produktdata efter att betyget har lagts till
       const updatedProduct = await ProductService.getProductById(id);
-      setProduct(updatedProduct);
+      setProduct(updatedProduct); // Uppdaterar produktens betyg
 
-      // Nollställ
+      // Nollställer användarens betyg
       setUserRating(0);
     } catch (error) {
       console.error("Kunde inte spara betyg:", error);
@@ -112,28 +105,28 @@ function ProductDetail() {
 
   return (
     <Grid container spacing={3} sx={{ mt: 2 }}>
-      {/* Vänster kolumn – Produktinfo */}
+      {/*Produktinfo */}
       <Grid item xs={12} md={8}>
-        <ProductItemLarge product={product} />
+        <ProductItemLarge product={product} /> {/* Komponent som visar detaljerad produktinformation */}
         <Box sx={{ mt: 3, display: "flex", alignItems: "center" }}>
           <TextField
-            label="Antal"
+            label="Antal" // Inputfält för att välja antal
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(parseInt(e.target.value) || 1)}
-            inputProps={{ min: 1 }}
+            value={amount} // Visar aktuell mängd
+            onChange={(e) => setAmount(parseInt(e.target.value) || 1)} // Uppdaterar mängd
+            inputProps={{ min: 1 }} // Sätter minimivärde på 1
             sx={{ width: "100px" }}
           />
           <Button variant="contained" onClick={handleAddToCart} sx={{ ml: 2, backgroundColor: '#003366', color: 'white', '&:hover': { backgroundColor: '#002244' } }} >
             Lägg till i varukorgen
           </Button>
           <Button 
-          variant="outlined" 
-          onClick={() => navigate(-1)} 
-          sx={{ ml: 2, color: '#003366', borderColor: '#003366', '&:hover': { backgroundColor: '#003366', color: 'white' } }}
-        >
-        Tillbaka
-        </Button>
+            variant="outlined" 
+            onClick={() => navigate(-1)} 
+            sx={{ ml: 2, color: '#003366', borderColor: '#003366', '&:hover': { backgroundColor: '#003366', color: 'white' } }}
+          >
+            Tillbaka
+          </Button>
         </Box>
         {message && (
           <Typography variant="body1" sx={{ mt: 2 }}>
@@ -142,18 +135,18 @@ function ProductDetail() {
         )}
       </Grid>
 
-      {/* Höger kolumn – Betyg (Amazon-liknande) */}
+      {/*Betyg */}
       <Grid item xs={12} md={4}>
         <Card>
           <CardHeader title="Kundbetyg" />
           <CardContent>
-            {/* Snittbetyg i stjärnor + text */}
+            {/* Snittbetyg och betyg i stjärnor */}
             <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
               <Rating
                 name="average-rating"
                 value={averageRating}
                 precision={0.1}
-                readOnly
+                readOnly // Gör betygsraden "read-only"
               />
               <Typography variant="h6" sx={{ ml: 1 }}>
                 {averageRating.toFixed(1)} / 5
@@ -165,7 +158,7 @@ function ProductDetail() {
 
             <Divider sx={{ mb: 2 }} />
 
-            {/* Användaren lägger till nytt betyg (utan kommentar) */}
+            {/* Användaren lägger till nytt betyg */}
             <Typography variant="subtitle1" sx={{ mb: 1 }}>
               Sätt ditt betyg:
             </Typography>
@@ -173,21 +166,21 @@ function ProductDetail() {
               <Rating
                 name="user-rating"
                 value={userRating}
-                onChange={(event, newValue) => setUserRating(newValue)}
+                onChange={(event, newValue) => setUserRating(newValue)} // Uppdaterar användarens betyg
               />
-         <Button 
-         variant="contained"
-          sx={{ ml: 2, backgroundColor: '#003366', color: 'white', '&:hover': { backgroundColor: '#002244' } }} 
-          onClick={handleSubmitRating}
-          disabled={userRating === 0}
-        >
-        Skicka
-        </Button>
+              <Button 
+                variant="contained"
+                sx={{ ml: 2, backgroundColor: '#003366', color: 'white', '&:hover': { backgroundColor: '#002244' } }} 
+                onClick={handleSubmitRating} // Skickar betyg
+                disabled={userRating === 0} // Inaktiverar knappen om inget betyg är valt
+              >
+                Skicka
+              </Button>
             </Box>
 
             <Divider sx={{ mb: 2 }} />
 
-            {/* Fördelning av betyg: 5 stjärnor -> 1 stjärna */}
+            {/* Fördelning av betyg (hur många gav varje antal stjärnor) */}
             {[5, 4, 3, 2, 1].map((star) => {
               const count = distribution[star];
               const percent =
@@ -201,14 +194,14 @@ function ProductDetail() {
                     {star} stjärnor
                   </Typography>
                   <Box sx={{ flexGrow: 1, mx: 2 }}>
-                  <LinearProgress 
-                  variant="determinate" 
-                  value={percent} 
-                  sx={{ 
-                    backgroundColor: "#D3D3D3", 
-                    "& .MuiLinearProgress-bar": { backgroundColor: "#003366" } 
-                  }} 
-                  />
+                    <LinearProgress 
+                      variant="determinate" 
+                      value={percent} 
+                      sx={{ 
+                        backgroundColor: "#D3D3D3", 
+                        "& .MuiLinearProgress-bar": { backgroundColor: "#003366" } 
+                      }} 
+                    />
                   </Box>
                   <Typography
                     variant="body2"
@@ -231,7 +224,7 @@ function ProductDetail() {
         >
           <Button sx={{ ml: 2, color: '#003366', borderColor: '#003366', '&:hover': { backgroundColor: '#003366', color: 'white' } }}
             variant="outlined"
-            onClick={() => navigate(`/products/${id}/edit`)}
+            onClick={() => navigate(`/products/${id}/edit`)} // Navigera till produktredigeringssidan
           >
             Ändra produkt
           </Button>
