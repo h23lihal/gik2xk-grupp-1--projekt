@@ -1,5 +1,5 @@
 
-
+// Definierar en modell för 'cart' i en Sequelize-baserad databas
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define('carts', {
       id: {

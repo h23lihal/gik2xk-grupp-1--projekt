@@ -1,5 +1,5 @@
 const { all } = require("../app");
-
+// Definierar en modell för 'Customers' i en Sequelize-baserad databas
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define ('customers', {
       id: {

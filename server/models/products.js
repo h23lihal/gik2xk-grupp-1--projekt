@@ -1,6 +1,6 @@
 const { validate } = require("validate.js");
 const { all } = require("../app");
-
+// Definierar en modell för 'Products' i en Sequelize-baserad databas
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define ('products', {
     id: {
