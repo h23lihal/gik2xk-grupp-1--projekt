@@ -11,11 +11,13 @@ import {
   ListItemText,
   TextField,
   IconButton,
+  Badge,
 } from "@mui/material";
 import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-const CartModal = ({ customerId, isOpen, onClose }) => {
+const CartModal = ({ customerId, isOpen, onClose, cartItemCount, setCartItemCount }) => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -24,7 +26,6 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
       console.error("Ingen giltig customerId skickad till CartModal!");
       return;
     }
-
     if (isOpen) {
       fetchCart();
     }
@@ -37,24 +38,27 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
       );
       setCartItems(response.data.cartItems || []);
       setTotalPrice(response.data.totalCartPrice || 0);
+      
+      // Uppdatera antalet varor i varukorgen
+      const totalItems = response.data.cartItems.reduce((sum, item) => sum + item.amount, 0);
+      setCartItemCount(totalItems);  // Uppdatera cartItemCount här
+      
     } catch (error) {
       console.error("Det gick inte att hämta varukorgen", error);
     }
   };
 
-  // 🗑 Ta bort produkt från varukorgen
   const handleRemoveItem = async (productId) => {
     try {
       await axios.delete(`http://localhost:5001/cart/removeProduct`, {
         data: { customerId, productId },
       });
-      fetchCart(); // Uppdatera varukorgen efter borttagning
+      fetchCart();
     } catch (error) {
       console.error("Fel vid borttagning av produkt:", error);
     }
   };
 
-  // ✏ Uppdatera antal produkter
   const handleUpdateAmount = async (productId, newAmount) => {
     if (newAmount < 1) {
       handleRemoveItem(productId);
@@ -76,11 +80,12 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
   const handleCheckout = async () => {
     try {
       await axios.delete("http://localhost:5001/cart/clearCart", {
-        data: { customerId }, // Skicka rätt kund-ID
+        data: { customerId },
       });
-  
-      setCartItems([]); // Rensa frontendens state
+
+      setCartItems([]);
       setTotalPrice(0);
+      setCartItemCount(0); // Nollställ antalet varor efter köp
       alert("Köpet genomfört! Varukorgen är nu tom.");
     } catch (error) {
       console.error("Fel vid köp:", error.response?.data || error.message);
@@ -89,7 +94,12 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth>
-      <DialogTitle>Din Varukorg</DialogTitle>
+      <DialogTitle>
+        Din Varukorg
+        <Badge badgeContent={cartItemCount} color="error" sx={{ ml: 2 }}>
+          <ShoppingCartIcon />
+        </Badge>
+      </DialogTitle>
       <DialogContent>
         {cartItems.length === 0 ? (
           <Typography>Din varukorg är tom</Typography>
@@ -106,21 +116,22 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
                   padding: "10px",
                 }}
               >
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  width="80"
-                  height="80"
-                  style={{
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                    display: item.imageUrl ? "block" : "none",
-                  }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.style.display = "none";
-                  }}
-                />
+                {item.imageUrl && (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    width="80"
+                    height="80"
+                    style={{
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = "none";
+                    }}
+                  />
+                )}
 
                 <ListItemText
                   primary={item.title}
@@ -144,20 +155,24 @@ const CartModal = ({ customerId, isOpen, onClose }) => {
             ))}
           </List>
         )}
-        <Typography variant="h6" sx={{ marginTop: "0.3remx", fontWeight: "bold" }}>
+
+        <Typography variant="h6" sx={{ marginTop: "1rem", fontWeight: "bold" }}>
           Totalt: {totalPrice.toFixed(2)} SEK
         </Typography>
       </DialogContent>
-      <DialogActions>
-      <Button 
-      onClick={handleCheckout} 
-      color="success" 
-      variant="contained" 
-      sx={{ marginRight: "27rem" }}
-      >
-      Köp
-      </Button>
-        <Button onClick={onClose} color="primary">
+
+      {/* DialogActions med bättre placering av knappar */}
+      <DialogActions sx={{ justifyContent: "space-between", padding: "16px" }}>
+        <Button
+          onClick={handleCheckout}
+          color="success"
+          variant="contained"
+          sx={{ flexGrow: 1, marginRight: "10px" }}
+        >
+          Köp
+        </Button>
+
+        <Button onClick={onClose} color="primary" variant="outlined">
           Stäng
         </Button>
       </DialogActions>

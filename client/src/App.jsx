@@ -1,14 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { Box, AppBar, Toolbar, Typography, Button, Badge } from '@mui/material';
 import CartModal from './components/CartModal';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import HomeIcon from '@mui/icons-material/Home';
+import axios from 'axios';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customerId] = useState(1); // Sätt här användarens ID (här är ett exempel med 1)
+  const [customerId] = useState(1); 
+  const [cartItemCount, setCartItemCount] = useState(0); 
 
+  useEffect(() => {
+    const fetchCartItemCount = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5001/customers/${customerId}/getCart`
+        );
+        const totalItems = response.data.cartItems.reduce(
+          (sum, item) => sum + item.amount,
+          0
+        );
+        setCartItemCount(totalItems); // Uppdatera varukorgens antal
+      } catch (error) {
+        console.error('Kunde inte hämta varukorgen', error);
+      }
+    };
+  
+    fetchCartItemCount(); // Hämtar antal varor i varukorgen när sidan laddas
+  }, [customerId]); // När customerId ändras, uppdatera varukorgens antal
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -43,10 +63,14 @@ function App() {
             <Button
               color="inherit"
               onClick={openModal}
-              startIcon={<ShoppingCartIcon sx={{ color: '#003366' }} />}
-              sx={{ color: '#003366' }}
+              sx={{ color: "#003366" }}
+              startIcon={
+                <Badge badgeContent={cartItemCount} color="error">
+                  <ShoppingCartIcon sx={{ color: "#003366" }} />
+                </Badge>
+              }
             >
-              varukorg
+              Varukorg
             </Button>
           </Toolbar>
         </AppBar>
@@ -98,7 +122,7 @@ function App() {
         </Box>
       </Box>
 
-      <CartModal customerId={customerId} isOpen={isModalOpen} onClose={closeModal} />
+      <CartModal customerId={customerId} isOpen={isModalOpen} onClose={closeModal} setCartItemCount={setCartItemCount} />
     </>
   );
 }
